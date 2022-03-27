@@ -93,21 +93,8 @@ for x in log:
             ActividadesLI[chr(contA+64)]=evento
         ##Generar la traza en envetos tipo A,B,C,D,D,F
         Traza.append(ActividadesL[evento])
-    ##Agregar la traza a la lista de trazas
-    # print(Traza)
-    # sourceFile = open('traza.txt', 'w')
-    # print(Traza, file = sourceFile, end = '')
-    # sourceFile.close()
-    # sourceFile= open("traza.txt", "r")
-    # s=sourceFile.readline()
-    # sourceFile.close()
-    # buscar="'"+s+"'"
+    ##Agregar la traza a la lista de trazas sin repetir y contar incidencias
     
-    # # print(buscar)
-    # if TrazasSinRepetir.get(buscar)== None:
-    #     TrazasSinRepetir[buscar]=1
-    # else:
-    #     TrazasSinRepetir[buscar]=TrazasSinRepetir.get(buscar)+1
     ban=1
     for x in TrazasSinRepetir:
         if x[0]==Traza:
@@ -124,12 +111,12 @@ for x in log:
 
 ## Calculo de Varianza ##
     ## Agrupar por trazas iguales ##
-# sorted(TrazasSinRepetir, key=lambda x: x[1])
+    #Ordenar las trazas por numero de incidencias
 TrazasSinRepetir=Sort(TrazasSinRepetir)
-for x in TrazasSinRepetir:
-    # print(x)
-    if x[1]>=2:
-        print(x[0], ' : ', x[1])
+# for x in TrazasSinRepetir:
+#     # print(x)
+#     if x[1]>=2:
+#         print(x[0], ' : ', x[1])
 # print(TrazasSinRepetir)
 
 ########## Fin de Lectura de trazas ###################
