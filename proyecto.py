@@ -1,4 +1,5 @@
 # data
+from audioop import reverse
 import pandas as pd
 from pm4py.objects.conversion.log import converter as log_converter
 from pm4py.objects.log.importer.xes import importer as xes_importer
@@ -35,11 +36,22 @@ import math
 import time
 import copy
 
+
+# Python code to sort the tuples using second element 
+# of sublist Inplace way to sort using sort()
+def Sort(sub_li):
+  
+    # reverse = None (Sorts in Ascending order)
+    # key is set to sort using second element of 
+    # sublist lambda has been used
+    sub_li.sort(key = lambda x: x[1], reverse=1)
+    return sub_li
+
 ActividadesLI = dict()
 CentroidesFinales=list()
 TrazasC=list()
 ##Dicionarios para contar las trazas
-TrazasSinRepetir = dict()
+TrazasSinRepetir = list()
 
 ##Dicionarios para combertir de evento <-> letra y evento <-> numero
 ActividadesN = dict()
@@ -83,26 +95,41 @@ for x in log:
         Traza.append(ActividadesL[evento])
     ##Agregar la traza a la lista de trazas
     # print(Traza)
-    sourceFile = open('traza.txt', 'w')
-    print(Traza, file = sourceFile, end = '')
-    sourceFile.close()
-    sourceFile= open("traza.txt", "r")
-    s=sourceFile.readline()
-    sourceFile.close()
-    buscar="'"+s+"'"
+    # sourceFile = open('traza.txt', 'w')
+    # print(Traza, file = sourceFile, end = '')
+    # sourceFile.close()
+    # sourceFile= open("traza.txt", "r")
+    # s=sourceFile.readline()
+    # sourceFile.close()
+    # buscar="'"+s+"'"
     
-    # print(buscar)
-    if TrazasSinRepetir.get(buscar)== None:
-        TrazasSinRepetir[buscar]=1
-    else:
-        TrazasSinRepetir[buscar]=TrazasSinRepetir.get(buscar)+1
+    # # print(buscar)
+    # if TrazasSinRepetir.get(buscar)== None:
+    #     TrazasSinRepetir[buscar]=1
+    # else:
+    #     TrazasSinRepetir[buscar]=TrazasSinRepetir.get(buscar)+1
+    ban=1
+    for x in TrazasSinRepetir:
+        if x[0]==Traza:
+            ban=0
+            x[1]=x[1]+1
+            break
+    if ban==1:
+        laux=list()
+        laux.append(Traza.copy())
+        laux.append(1)
+        TrazasSinRepetir.append(laux.copy())
+        
     listaTraza.append(Traza)
 
 ## Calculo de Varianza ##
     ## Agrupar por trazas iguales ##
-for key, value in TrazasSinRepetir.items():
-    if value>=2:
-        print(key, ' : ', value)
+# sorted(TrazasSinRepetir, key=lambda x: x[1])
+TrazasSinRepetir=Sort(TrazasSinRepetir)
+for x in TrazasSinRepetir:
+    # print(x)
+    if x[1]>=2:
+        print(x[0], ' : ', x[1])
 # print(TrazasSinRepetir)
 
 ########## Fin de Lectura de trazas ###################
