@@ -28,3 +28,4 @@ for x in listaContarTrazas:
 # print(list1)
 # str2="'"+print(list1)+"'"
 # print(str2)
+# dsdsdasd
