@@ -112,11 +112,28 @@ for x in log:
 ## Calculo de Varianza ##
     ## Agrupar por trazas iguales ##
     #Ordenar las trazas por numero de incidencias
+
 TrazasSinRepetir=Sort(TrazasSinRepetir)
+
+##BUscar frecuencias relativas
+for x in TrazasSinRepetir:
+    fr=x[1]/len(listaTraza)
+    x.append(fr)
+
+##Calcular varianza
+sumas=0
+for x in TrazasSinRepetir:
+    sumas=sumas+(x[2]**2)
+# sumas=sum([x**2 for x[2] in TrazasSinRepetir])
+k=len(TrazasSinRepetir)
+varianza=1-((sumas)/((k-1)/k))
+print("IVC= "+str(varianza))
+
+
 # for x in TrazasSinRepetir:
 #     # print(x)
 #     if x[1]>=2:
-#         print(x[0], ' : ', x[1])
+#         print(x[0], ' : ', x[1], ' : ', x[2])
 # print(TrazasSinRepetir)
 
 ########## Fin de Lectura de trazas ###################
@@ -124,25 +141,3 @@ TrazasSinRepetir=Sort(TrazasSinRepetir)
 
 
 
-########## Inicio de Inductive ###################
-# create the process tree
-tree = inductive_miner.apply_tree(log)
-
-# viz
-gviz = pt_visualizer.apply(tree)
-pt_visualizer.view(gviz)
-
-# convert the process tree to a petri net
-net, initial_marking, final_marking = pt_converter.apply(tree)
-
-# alternatively, use the inductive_miner to create a petri net from scratch
-# net, initial_marking, final_marking = inductive_miner.apply(log)
-
-# viz
-parameters = {pn_visualizer.Variants.FREQUENCY.value.Parameters.FORMAT: "png"}
-gviz = pn_visualizer.apply(net, initial_marking, final_marking, 
-                           parameters=parameters, 
-                           variant=pn_visualizer.Variants.FREQUENCY, 
-                           log=log)
-pn_visualizer.view(gviz)
-########## Fin de Inductive ###################
