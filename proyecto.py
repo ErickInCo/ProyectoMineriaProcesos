@@ -21,19 +21,13 @@ from pm4py.visualization.dfg import visualizer as dfg_visualization
 
 # misc 
 from pm4py.objects.conversion.process_tree import converter as pt_converter
-import json
-# from collections import Counter
+
+
 
 #Trazas
 
-from sklearn.cluster import KMeans
-from sklearn import metrics
 import pandas as pd
 import numpy as np
-import operator
-import random
-import math
-import time
 import copy
 
 
@@ -47,9 +41,9 @@ def Sort(sub_li):
     sub_li.sort(key = lambda x: x[1], reverse=1)
     return sub_li
 
-ActividadesLI = dict()
-CentroidesFinales=list()
-TrazasC=list()
+
+
+
 ##Dicionarios para contar las trazas
 TrazasSinRepetir = list()
 
@@ -57,7 +51,8 @@ TrazasSinRepetir = list()
 ActividadesN = dict()
 ActividadesL = dict()
 ActividadesNI = dict()
-# global ActividadesLI
+ActividadesLI = dict()
+
 ##Contador de eventos
 contA=0
 ##Inicializar lista de trazas
@@ -65,12 +60,6 @@ listaTraza=list()
 
 # xes 
 log = xes_importer.apply('Sepsis Cases - Event LogArtificial.xes')
-
-# csv
-##df = pd.read_csv('running-example.csv')
-##df = dataframe_utils.convert_timestamp_columns_in_df(df)
-##df = df.sort_values('time:timestamp')
-
 
 
 ##Leer archivo xes
@@ -115,7 +104,7 @@ for x in log:
 
 TrazasSinRepetir=Sort(TrazasSinRepetir)
 
-##BUscar frecuencias relativas
+##Buscar frecuencias relativas
 for x in TrazasSinRepetir:
     fr=x[1]/len(listaTraza)
     x.append(fr)
@@ -124,16 +113,19 @@ for x in TrazasSinRepetir:
 sumas=0
 for x in TrazasSinRepetir:
     sumas=sumas+(x[2]**2)
-# sumas=sum([x**2 for x[2] in TrazasSinRepetir])
+
 k=len(TrazasSinRepetir)
-varianza=1-((sumas)/((k-1)/k))
+varianza=(1-(sumas))/((k-1)/k)
+
+for x in TrazasSinRepetir:
+    if x[1]>=1:
+        print(x[0], ' : ', x[1], ' : ', x[2])
+
+
 print("IVC= "+str(varianza))
 
 
-# for x in TrazasSinRepetir:
-#     # print(x)
-#     if x[1]>=2:
-#         print(x[0], ' : ', x[1], ' : ', x[2])
+
 # print(TrazasSinRepetir)
 
 ########## Fin de Lectura de trazas ###################
