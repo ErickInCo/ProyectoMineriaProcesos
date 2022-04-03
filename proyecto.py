@@ -118,9 +118,9 @@ for x in TrazasSinRepetir:
 k=len(TrazasSinRepetir)
 varianza=(1-(sumas))/((k-1)/k)
 
-for x in TrazasSinRepetir:
-    if x[1]>=1:
-        print(x[0], ' : ', x[1], ' : ', x[2])
+# for x in TrazasSinRepetir:
+#     if x[1]>=1:
+#         print(x[0], ' : ', x[1], ' : ', x[2])
 
 
 print("IVC= "+str(varianza))
@@ -134,5 +134,6 @@ print("IVC= "+str(varianza))
 process_tree = pm4py.discover_tree_inductive(log)
 bpmn_model = pm4py.convert_to_bpmn(process_tree)
 pm4py.view_bpmn(bpmn_model)
+# pm4py.save_vis_bpmn(bpmn_model,""" """)
 
 
