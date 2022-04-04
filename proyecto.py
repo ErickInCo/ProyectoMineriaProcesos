@@ -42,6 +42,20 @@ def Sort(sub_li):
     sub_li.sort(key = lambda x: x[1], reverse=1)
     return sub_li
 
+# Funcion para calcular la seleccion por probabilidad de frecuencias
+def prob(a,b,trazas):
+    cont=0
+    total=len(trazas)
+    for x in trazas:
+        for y in range(1,len(x)):
+            if x[y-1]==a and x[y]==b:
+                cont=cont+1
+                break
+    return cont/total
+
+# Funcion para ordenar los resultados de seleccion de frecuencias
+def ordenar(e):
+    return e[-1]
 
 
 
@@ -131,9 +145,42 @@ print("IVC= "+str(varianza))
 
 ########## Fin de Lectura de trazas ###################
 
-process_tree = pm4py.discover_tree_inductive(log)
-bpmn_model = pm4py.convert_to_bpmn(process_tree)
-pm4py.view_bpmn(bpmn_model)
-# pm4py.save_vis_bpmn(bpmn_model,""" """)
+# process_tree = pm4py.discover_tree_inductive(log)
+# bpmn_model = pm4py.convert_to_bpmn(process_tree)
+# pm4py.view_bpmn(bpmn_model)
 
 
+########## Variables de seleccion ###################
+Pusuario = .5
+umbral = .5
+TotalTrazasSelecc=len(listaTraza)*Pusuario
+
+# for x in listaTraza:
+#     print(x)
+
+########## Seleccion de Instancias  ###################
+if varianza<umbral:
+    print("Seleccion De Mayor a Menor #No recuerdo el nombre")
+    
+    print("Se seleccionaran "+str(TotalTrazasSelecc) + "Trazas")
+elif varianza>umbral:
+    print("Selección de instancias por patrones de secuencia frecuentes")
+    print("Se seleccionaran "+str(TotalTrazasSelecc) + "Trazas")
+    ########## Seleccion por patrones de secuencia frecuentes ###################
+    for x in listaTraza:
+        contval=0
+        for y in range(1,len(x)):
+            if prob(x[y-1],x[y],listaTraza) >= Pusuario:
+                contval=contval+1
+            else:
+                contval=contval-1
+        x.append(contval)
+    listaTraza.sort(reverse=True, key=ordenar)
+    c=0
+    for x in listaTraza:
+        # print(x)
+        print(x)
+        c=c+1
+        if c==TotalTrazasSelecc:
+            break
+    print(c)

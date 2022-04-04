@@ -30,7 +30,7 @@ for x in trazas:
     x.append(contval)
 trazas.sort(reverse=True, key=ordenar)
 for x in trazas:
-    print(x)
-    # if x[-1] >0:
-    #     print(x)
+    # print(x)
+    if x[-1] >0:
+        print(x)
 
