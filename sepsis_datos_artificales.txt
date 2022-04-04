@@ -1,0 +1,15 @@
+A,B,C,D,E,F,G
+D,C,A,B,E,H,F,D,C,D,C,C,G
+A,B,E,I,H,C,J,D,F
+A,B,E,D,C,F,D,F,D,D,C,K
+A,B,E,F,L,D,C,J,D,J,C,D,F,G
+A,B,E,I,D,C,J,H,F,D,C,G,M
+A,B,E,D,C,F,G
+A,B,E,D,C,J,H,I,F,N
+A,B,E,I,H,D,C,J,F,C
+A,B,E,D,C,L,F,F,G
+A,B,E,I,H,D,C,C,D,L,C,J,M
+A,B,E,C,J,D,H,F,I,D,C,G,M
+A,B,D,C,F,E,F,D,C,D,C,D,C
+A,B,D,C,J,E,I,H,F,D,C,G,M
+A,I,B,E,H,C,J,D,F,G
