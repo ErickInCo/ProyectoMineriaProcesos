@@ -81,13 +81,23 @@ log = xes_importer.apply('Sepsis Cases - Event LogArtificial.xes')
 log = log_converter.apply(log)
 dataframe = log_converter.apply(log, variant=log_converter.Variants.TO_DATA_FRAME)
 
+# print(log)
+# print(dataframe)
+
 ########## Inicio de Lectura de trazas ###################
 
 ##Recorrer el log de eventos y registrar cada evento
+c2=0
 for x in log:
     Traza=list()
+    # print(x)
+    # c2=c2+1
+    # print(c2)
+    # print("\n")
+    
     for y in x:
         evento = y["concept:name"]
+        # print(y)
         if evento not in ActividadesN:
             contA=contA+1
             ##Registrar el evento en los diccionarios de evento
@@ -98,7 +108,7 @@ for x in log:
         ##Generar la traza en envetos tipo A,B,C,D,D,F
         Traza.append(ActividadesL[evento])
     ##Agregar la traza a la lista de trazas sin repetir y contar incidencias
-    
+    # print("########################################################\n")
     ban=1
     for x in TrazasSinRepetir:
         if x[0]==Traza:
@@ -118,6 +128,8 @@ for x in log:
     #Ordenar las trazas por numero de incidencias
 
 TrazasSinRepetir=Sort(TrazasSinRepetir)
+
+
 
 ##Buscar frecuencias relativas
 for x in TrazasSinRepetir:
@@ -143,12 +155,9 @@ print("IVC= "+str(varianza))
 
 # print(TrazasSinRepetir)
 
+
+
 ########## Fin de Lectura de trazas ###################
-
-# process_tree = pm4py.discover_tree_inductive(log)
-# bpmn_model = pm4py.convert_to_bpmn(process_tree)
-# pm4py.view_bpmn(bpmn_model)
-
 
 ########## Variables de seleccion ###################
 Pusuario = .5
@@ -160,9 +169,29 @@ TotalTrazasSelecc=len(listaTraza)*Pusuario
 
 ########## Seleccion de Instancias  ###################
 if varianza<umbral:
-    print("Seleccion De Mayor a Menor #No recuerdo el nombre")
+    print("Seleccion de instancias por frecuencia")
     
     print("Se seleccionaran "+str(TotalTrazasSelecc) + "Trazas")
+    con=0
+    SI=list()
+    for x in TrazasSinRepetir:
+        for y in range(0,x[1]):
+            SI.append(x[0].copy())
+            con=con+1
+            if len(SI)>=TotalTrazasSelecc:
+                break
+        if len(SI)>=TotalTrazasSelecc:
+            break
+    c=0 
+    for x in SI:
+        print(c,end=" :")
+        print(x)
+        c=c+1
+            
+
+        
+
+
 elif varianza>umbral:
     print("Selección de instancias por patrones de secuencia frecuentes")
     print("Se seleccionaran "+str(TotalTrazasSelecc) + "Trazas")
@@ -184,3 +213,11 @@ elif varianza>umbral:
         if c==TotalTrazasSelecc:
             break
     print(c)
+
+########## Inicio de BPMN completo ###################
+
+process_tree = pm4py.discover_tree_inductive(log)
+bpmn_model = pm4py.convert_to_bpmn(process_tree)
+pm4py.view_bpmn(bpmn_model)
+
+########## Fin de BPMN completo ###################
