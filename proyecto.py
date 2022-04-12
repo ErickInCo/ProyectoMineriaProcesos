@@ -88,6 +88,10 @@ dataframe = log_converter.apply(log, variant=log_converter.Variants.TO_DATA_FRAM
 
 ##Recorrer el log de eventos y registrar cada evento
 c2=0
+trazaMG=0
+trazaMC=10000
+trazapromedio=0
+sumatamanoTraza=0
 for x in log:
     Traza=list()
     # print(x)
@@ -120,7 +124,12 @@ for x in log:
         laux.append(Traza.copy())
         laux.append(1)
         TrazasSinRepetir.append(laux.copy())
-        
+    
+    sumatamanoTraza=sumatamanoTraza+len(Traza)
+    if len(Traza)>trazaMG:
+        trazaMG=len(Traza)
+    if len(Traza)<trazaMC:
+        trazaMC=len(Traza)
     listaTraza.append(Traza)
 
 ## Calculo de Varianza ##
@@ -129,6 +138,22 @@ for x in log:
 
 TrazasSinRepetir=Sort(TrazasSinRepetir)
 
+########## Imprimir datos de trazas#############
+print("########################################################\n\n")
+trazapromedio=sumatamanoTraza/len(listaTraza)
+print("Longitud de traza mas grande : "+str(trazaMG))
+print("Longitud de traza mas chica : "+str(trazaMC))
+print("Longitud promedio de traza : "+str(trazapromedio))
+print("\n\n")
+print("########################################################\n\n")
+########## Imprimir Trazas ###################
+i=1
+print("########################################################\n\n")
+for x in listaTraza:
+    print(i, end=" ")
+    print(x)
+    i=i+1
+print("########################################################\n\n")
 
 
 ##Buscar frecuencias relativas
@@ -143,6 +168,15 @@ for x in TrazasSinRepetir:
 
 k=len(TrazasSinRepetir)
 varianza=(1-(sumas))/((k-1)/k)
+
+########## Imprimir Trazas sin repetir ###################
+i=1
+print("########################################################\n\n")
+for x in TrazasSinRepetir:
+    print(i, end=" ")
+    print(x)
+    i=i+1
+print("########################################################\n\n")
 
 # for x in TrazasSinRepetir:
 #     if x[1]>=1:
@@ -162,6 +196,7 @@ print("IVC= "+str(varianza))
 ########## Variables de seleccion ###################
 Pusuario = .5
 umbral = .5
+# umbral = 1
 TotalTrazasSelecc=len(listaTraza)*Pusuario
 
 # for x in listaTraza:
