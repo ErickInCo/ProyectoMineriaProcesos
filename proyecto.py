@@ -81,6 +81,8 @@ log = xes_importer.apply('Sepsis Cases - Event LogArtificial.xes')
 log = log_converter.apply(log)
 dataframe = log_converter.apply(log, variant=log_converter.Variants.TO_DATA_FRAME)
 
+# print(type(log))
+log2 = pm4py.objects.log.obj.EventLog()
 # print(log)
 # print(dataframe)
 
@@ -88,13 +90,17 @@ dataframe = log_converter.apply(log, variant=log_converter.Variants.TO_DATA_FRAM
 
 ##Recorrer el log de eventos y registrar cada evento
 c2=0
+trazaMG=0
+trazaMC=10000
+trazapromedio=0
+sumatamanoTraza=0
 for x in log:
     Traza=list()
     # print(x)
     # c2=c2+1
     # print(c2)
     # print("\n")
-    
+    Traza.append(x)
     for y in x:
         evento = y["concept:name"]
         # print(y)
@@ -111,7 +117,7 @@ for x in log:
     # print("########################################################\n")
     ban=1
     for x in TrazasSinRepetir:
-        if x[0]==Traza:
+        if x[0][1:]==Traza[1:]:
             ban=0
             x[1]=x[1]+1
             break
@@ -120,7 +126,13 @@ for x in log:
         laux.append(Traza.copy())
         laux.append(1)
         TrazasSinRepetir.append(laux.copy())
-        
+    
+    sumatamanoTraza=sumatamanoTraza+len(Traza)-1
+    if len(Traza)-1>trazaMG:
+        trazaMG=len(Traza)-1
+    if len(Traza)-1<trazaMC:
+        trazaMC=len(Traza)-1
+
     listaTraza.append(Traza)
 
 ## Calculo de Varianza ##
@@ -129,7 +141,24 @@ for x in log:
 
 TrazasSinRepetir=Sort(TrazasSinRepetir)
 
-
+########## Imprimir datos de trazas#############
+print("########################################################\n\n")
+trazapromedio=sumatamanoTraza/len(listaTraza)
+print("Longitud de traza mas grande : "+str(trazaMG))
+print("Longitud de traza mas chica : "+str(trazaMC))
+print("Longitud promedio de traza : "+str(trazapromedio))
+print("\n\n")
+print("########################################################\n\n")
+########## Imprimir Trazas ###################
+i=1
+print("########################################################\n\n")
+for x in listaTraza:
+    print(i, end=" ")
+    for y in range(1,len(x)):
+        print(x[y], end=",")
+    print()
+    i=i+1
+print("########################################################\n\n")
 
 ##Buscar frecuencias relativas
 for x in TrazasSinRepetir:
@@ -143,6 +172,22 @@ for x in TrazasSinRepetir:
 
 k=len(TrazasSinRepetir)
 varianza=(1-(sumas))/((k-1)/k)
+
+########## Imprimir Trazas sin repetir ###################
+i=1
+print("########################################################\n\n")
+for x in TrazasSinRepetir:
+    print(i, end=" ")
+    noMostrar=0
+    for y in x:
+        if noMostrar==0:
+            print(y[1:], end=", ")
+            noMostrar=+1
+        else:
+            print(y, end=", ")
+    print()
+    i=i+1
+print("########################################################\n\n")
 
 # for x in TrazasSinRepetir:
 #     if x[1]>=1:
@@ -168,6 +213,7 @@ TotalTrazasSelecc=len(listaTraza)*Pusuario
 #     print(x)
 
 ########## Seleccion de Instancias  ###################
+# Checking if the variable `varianzaumbral` is True.
 if varianza<umbral:
     print("Seleccion de instancias por frecuencia")
     
@@ -184,9 +230,17 @@ if varianza<umbral:
             break
     c=0 
     for x in SI:
+        log2.append(x[0])
         print(c,end=" :")
-        print(x)
+        print(x[1:])
         c=c+1
+    ########## Inicio de BPMN de SI ###################
+    print("\n\nBPMN de la seleccion de instancias\n\n")
+    process_tree2 = pm4py.discover_tree_inductive(log2)
+    bpmn_model2 = pm4py.convert_to_bpmn(process_tree2)
+    pm4py.view_bpmn(bpmn_model2)
+
+    ########## Fin de BPMN de SI ###################
             
 
         
@@ -208,14 +262,22 @@ elif varianza>umbral:
     c=0
     for x in listaTraza:
         # print(x)
-        print(x)
+        print(x[1:])
+        log2.append(x[0])
         c=c+1
         if c==TotalTrazasSelecc:
             break
     print(c)
+    ########## Inicio de BPMN de SI ###################
+    print("\n\nBPMN de la seleccion de instancias\n\n")
+    process_tree2 = pm4py.discover_tree_inductive(log2)
+    bpmn_model2 = pm4py.convert_to_bpmn(process_tree2)
+    pm4py.view_bpmn(bpmn_model2)
+
+    ########## Fin de BPMN de SI ###################
 
 ########## Inicio de BPMN completo ###################
-
+print("\n\nBPMN completo\n\n")
 process_tree = pm4py.discover_tree_inductive(log)
 bpmn_model = pm4py.convert_to_bpmn(process_tree)
 pm4py.view_bpmn(bpmn_model)
