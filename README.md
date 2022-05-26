@@ -1,5 +1,6 @@
 # Proyecto Mineria de Procesos
  Proyecto de mineria de procesos (Work In Progress)
+ 
 Implementacion de estrategias de conformidad entre modelos y logs de eventos
 
 
