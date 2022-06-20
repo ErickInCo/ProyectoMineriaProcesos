@@ -31,6 +31,8 @@ import pandas as pd
 import numpy as np
 import copy
 
+from sympy import re
+
 
 # Python code to sort the tuples using second element 
 # of sublist Inplace way to sort using sort()
@@ -74,7 +76,7 @@ contA=0
 listaTraza=list()
 
 # xes 
-log = xes_importer.apply('Sepsis Cases - Event LogArtificial.xes')
+log = xes_importer.apply('example.xes')
 
 
 ##Leer archivo xes
@@ -173,6 +175,69 @@ for x in TrazasSinRepetir:
 k=len(TrazasSinRepetir)
 varianza=(1-(sumas))/((k-1)/k)
 
+
+# Dp
+# l numero de eventos en todas las trasas
+# n numero de trasas
+# s arreglo con datos de cada n/l
+# f numero de evento en todas las trazas
+# v arreglo con las frecuencias de evento por traza
+ldato=0
+slista=list()
+for x in listaTraza:
+    tt=len(x[1:-1])
+    ldato=ldato+tt
+    slista.append(tt)
+n=len(listaTraza)
+
+myArray = np.array(slista)
+myInt = ldato
+newArray = myArray/myInt
+
+
+leventos=list(ActividadesL.values())
+veventos=list()
+feventos=list()
+
+
+for x in leventos:
+    # calcular f y v
+    v=list()
+    f=0
+    
+    for y in listaTraza:
+        z=y[1:]
+        
+        count_a = z.count(x)
+        f=f+count_a
+        v.append(count_a)
+    
+    veventos.append(v)
+    feventos.append(f)
+
+DP=0
+resultadosdp=list()
+
+for x in range(0,len(leventos)):
+    resultado=0
+    for y in range(0,n):
+        resultado=resultado+abs((veventos[x][y]/feventos[x])-newArray[y])
+    dpsinnorml=0.5*resultado
+    resultadosdp.append( round(dpsinnorml, 2))
+
+
+    DP=DP+dpsinnorml
+
+print(DP)
+
+myArray2 = np.array(resultadosdp)
+newArray2 = myArray2/DP
+
+DPAN=0
+for x in newArray2:
+    DPAN=DPAN+round(x, 2)
+print(DPAN)
+
 ########## Imprimir Trazas sin repetir ###################
 i=1
 print("########################################################\n\n")
@@ -234,14 +299,27 @@ if varianza<umbral:
         print(c,end=" :")
         print(x[1:])
         c=c+1
-    ########## Inicio de BPMN de SI ###################
-    print("\n\nBPMN de la seleccion de instancias\n\n")
-    process_tree2 = pm4py.discover_tree_inductive(log2)
-    bpmn_model2 = pm4py.convert_to_bpmn(process_tree2)
-    pm4py.view_bpmn(bpmn_model2)
+    # ########## Inicio de BPMN de SI ###################
+    # print("\n\nBPMN de la seleccion de instancias\n\n")
+    # process_tree2 = pm4py.discover_tree_inductive(log2)
+    # bpmn_model2 = pm4py.convert_to_bpmn(process_tree2)
+    # pm4py.view_bpmn(bpmn_model2)
 
-    ########## Fin de BPMN de SI ###################
-            
+    # ########## Fin de BPMN de SI ###################
+    ########## Inicio de BPMN completo ###################
+    print("\n\nBPMN completo\n\n")
+    process_tree = pm4py.discover_tree_inductive(log)
+    bpmn_model = pm4py.convert_to_bpmn(process_tree)
+    pm4py.view_bpmn(bpmn_model)
+
+    ########## Fin de BPMN completo ###################
+    # Alineamiento
+    net, initial_marking, final_marking = inductive_miner.apply(log)
+    from pm4py.algo.conformance.alignments.petri_net import algorithm as alignments
+    aligned_traces = alignments.apply_log(log, net, initial_marking, final_marking)
+    print(alignments)
+    for x in aligned_traces:
+        print(x)
 
         
 
@@ -275,11 +353,10 @@ elif varianza>umbral:
     pm4py.view_bpmn(bpmn_model2)
 
     ########## Fin de BPMN de SI ###################
-
-########## Inicio de BPMN completo ###################
-print("\n\nBPMN completo\n\n")
-process_tree = pm4py.discover_tree_inductive(log)
-bpmn_model = pm4py.convert_to_bpmn(process_tree)
-pm4py.view_bpmn(bpmn_model)
-
-########## Fin de BPMN completo ###################
+    # Alineamiento
+    net, initial_marking, final_marking = inductive_miner.apply(log2)
+    from pm4py.algo.conformance.alignments.petri_net import algorithm as alignments
+    aligned_traces = alignments.apply_log(log, net, initial_marking, final_marking)
+    print(alignments)
+    for x in aligned_traces:
+        print(x)
