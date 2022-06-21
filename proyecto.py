@@ -76,7 +76,7 @@ contA=0
 listaTraza=list()
 
 # xes 
-log = xes_importer.apply('Sepsis Cases - Event LogArtificial.xes')
+log = xes_importer.apply('example.xes')
 
 
 ##Leer archivo xes
@@ -184,8 +184,9 @@ varianza=(1-(sumas))/((k-1)/k)
 # v arreglo con las frecuencias de evento por traza
 ldato=0
 slista=list()
+
 for x in listaTraza:
-    tt=len(x[1:-1])
+    tt=len(x[1:])
     ldato=ldato+tt
     slista.append(tt)
 n=len(listaTraza)
@@ -198,15 +199,20 @@ newArray = myArray/myInt
 leventos=list(ActividadesL.values())
 veventos=list()
 feventos=list()
+
+
 for x in leventos:
     # calcular f y v
     v=list()
     f=0
+    
     for y in listaTraza:
-        for z in y[1:-1]:
-            count_a = z.count(x)
-            f=f+count_a
-            v.append(count_a)
+        z=y[1:]
+        
+        count_a = z.count(x)
+        f=f+count_a
+        v.append(count_a)
+    
     veventos.append(v)
     feventos.append(f)
 
@@ -215,9 +221,20 @@ resultadosdp=list()
 
 for x in range(0,len(leventos)):
     resultado=0
+    print(x)
+    print("////////////////////////////////////")
     for y in range(0,n):
+        print("///////////")
+        print("veventos[x][y]= "+str(veventos[x][y]))
+        print("feventos[x]= "+str(feventos[x]))
+        print("newArray[y]= "+str(newArray[y]))
+        print("abs((veventos[x][y]/feventos[x])-newArray[y])= "+str(abs((veventos[x][y]/feventos[x])-newArray[y])))
+        print("///////////")
         resultado=resultado+abs((veventos[x][y]/feventos[x])-newArray[y])
     dpsinnorml=0.5*resultado
+    
+    print(dpsinnorml)
+    print("\n")
     resultadosdp.append( round(dpsinnorml, 2))
 
 
