@@ -33,6 +33,9 @@ import copy
 
 from sympy import re
 
+# KL Divergente
+import math
+
 
 # Python code to sort the tuples using second element 
 # of sublist Inplace way to sort using sort()
@@ -216,39 +219,74 @@ for x in leventos:
     veventos.append(v)
     feventos.append(f)
 
+
+# Calculo de DP
 DP=0
 resultadosdp=list()
 
 for x in range(0,len(leventos)):
     resultado=0
-    print(x)
-    print("////////////////////////////////////")
+    # print(x)
+    # print("////////////////////////////////////")
     for y in range(0,n):
-        print("///////////")
-        print("veventos[x][y]= "+str(veventos[x][y]))
-        print("feventos[x]= "+str(feventos[x]))
-        print("newArray[y]= "+str(newArray[y]))
-        print("abs((veventos[x][y]/feventos[x])-newArray[y])= "+str(abs((veventos[x][y]/feventos[x])-newArray[y])))
-        print("///////////")
+        # print("///////////")
+        # print("veventos[x][y]= "+str(veventos[x][y]))
+        # print("feventos[x]= "+str(feventos[x]))
+        # print("newArray[y]= "+str(newArray[y]))
+        # print("abs((veventos[x][y]/feventos[x])-newArray[y])= "+str(abs((veventos[x][y]/feventos[x])-newArray[y])))
+        # print("///////////")
         resultado=resultado+abs((veventos[x][y]/feventos[x])-newArray[y])
     dpsinnorml=0.5*resultado
     
-    print(dpsinnorml)
-    print("\n")
+    # print(dpsinnorml)
+    # print("\n")
     resultadosdp.append( round(dpsinnorml, 2))
 
 
     DP=DP+dpsinnorml
 
-print(DP)
+# print(DP)
 
 myArray2 = np.array(resultadosdp)
-newArray2 = myArray2/DP
+DPpromedio=np.average(myArray2)
+# Fin de calculo de DP
 
-DPAN=0
-for x in newArray2:
-    DPAN=DPAN+round(x, 2)
-print(DPAN)
+
+# Calculo de KL Divergencia
+KLd=0
+resultadosKLd=list()
+
+for x in range(0,len(leventos)):
+    resultado=0
+    # print(x)
+    # print("////////////////////////////////////")
+    for y in range(0,n):
+        try:
+            reslog=math.log2((veventos[x][y]/feventos[x])*(1/newArray[y]))
+        except ValueError:
+            reslog=0
+        formula=(veventos[x][y]/feventos[x])*reslog
+        resultado=resultado+formula
+        # print("///////////")
+        # print("Formula = "+str(formula))
+        # print("///////////")
+        
+    KLDnorml=resultado
+    
+    # print(KLDnorml)
+    # print("\n")
+    resultadosKLd.append( round(KLDnorml, 2))
+
+
+    KLd=KLd+KLDnorml
+
+# print(KLd)
+
+myArray3 = np.array(resultadosKLd)
+KLpromedio=np.average(myArray3)
+
+# Fin de calculo de KLdivergente
+
 
 ########## Imprimir Trazas sin repetir ###################
 i=1
@@ -271,7 +309,10 @@ print("########################################################\n\n")
 #         print(x[0], ' : ', x[1], ' : ', x[2])
 
 
-print("IVC= "+str(varianza))
+# print("IVC= "+str(varianza))
+print("DP promedio= "+str(DPpromedio))
+print("KLdivergente promedio= "+str(KLpromedio))
+print("\n")
 
 
 
@@ -291,7 +332,7 @@ TotalTrazasSelecc=len(listaTraza)*Pusuario
 
 ########## Seleccion de Instancias  ###################
 # Checking if the variable `varianzaumbral` is True.
-if varianza<umbral:
+if DPpromedio<umbral:
     print("Seleccion de instancias por frecuencia")
     
     print("Se seleccionaran "+str(TotalTrazasSelecc) + "Trazas")
@@ -336,7 +377,7 @@ if varianza<umbral:
         
 
 
-elif varianza>umbral:
+elif DPpromedio>umbral:
     print("Selección de instancias por patrones de secuencia frecuentes")
     print("Se seleccionaran "+str(TotalTrazasSelecc) + "Trazas")
     ########## Seleccion por patrones de secuencia frecuentes ###################
