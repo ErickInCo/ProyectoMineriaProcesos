@@ -78,18 +78,24 @@ contA=0
 ##Inicializar lista de trazas
 listaTraza=list()
 
-# xes 
-log = xes_importer.apply('example.xes')
+nombrearchivo="example.xes"
+# nombrearchivo="ArtificialPatientTreatment.csv"
+# nombrearchivo="CCC19LogCSV.csv"
+
+if nombrearchivo[-3:]=="xes":
+    log = xes_importer.apply(nombrearchivo)
+    log = log_converter.apply(log)
+    dataframe = log_converter.apply(log, variant=log_converter.Variants.TO_DATA_FRAME)
+elif nombrearchivo[-3:]=="csv":
+    dataframe = pd.read_csv(nombrearchivo, sep=',')
+    dataframe = pm4py.format_dataframe(dataframe, case_id='CASEID', activity_key='ACTIVITY', timestamp_key='START')
+    log = pm4py.convert_to_event_log(dataframe)
 
 
-##Leer archivo xes
-log = log_converter.apply(log)
-dataframe = log_converter.apply(log, variant=log_converter.Variants.TO_DATA_FRAME)
+eventkey='concept:name'
 
-# print(type(log))
 log2 = pm4py.objects.log.obj.EventLog()
-# print(log)
-# print(dataframe)
+
 
 ########## Inicio de Lectura de trazas ###################
 
@@ -101,14 +107,9 @@ trazapromedio=0
 sumatamanoTraza=0
 for x in log:
     Traza=list()
-    # print(x)
-    # c2=c2+1
-    # print(c2)
-    # print("\n")
     Traza.append(x)
     for y in x:
-        evento = y["concept:name"]
-        # print(y)
+        evento = y[eventkey]
         if evento not in ActividadesN:
             contA=contA+1
             ##Registrar el evento en los diccionarios de evento
@@ -208,14 +209,11 @@ for x in leventos:
     # calcular f y v
     v=list()
     f=0
-    
     for y in listaTraza:
         z=y[1:]
-        
         count_a = z.count(x)
         f=f+count_a
         v.append(count_a)
-    
     veventos.append(v)
     feventos.append(f)
 
@@ -226,26 +224,14 @@ resultadosdp=list()
 
 for x in range(0,len(leventos)):
     resultado=0
-    # print(x)
-    # print("////////////////////////////////////")
     for y in range(0,n):
-        # print("///////////")
-        # print("veventos[x][y]= "+str(veventos[x][y]))
-        # print("feventos[x]= "+str(feventos[x]))
-        # print("newArray[y]= "+str(newArray[y]))
-        # print("abs((veventos[x][y]/feventos[x])-newArray[y])= "+str(abs((veventos[x][y]/feventos[x])-newArray[y])))
-        # print("///////////")
         resultado=resultado+abs((veventos[x][y]/feventos[x])-newArray[y])
     dpsinnorml=0.5*resultado
-    
-    # print(dpsinnorml)
-    # print("\n")
     resultadosdp.append( round(dpsinnorml, 2))
-
 
     DP=DP+dpsinnorml
 
-# print(DP)
+
 
 myArray2 = np.array(resultadosdp)
 DPpromedio=np.average(myArray2)
@@ -258,8 +244,6 @@ resultadosKLd=list()
 
 for x in range(0,len(leventos)):
     resultado=0
-    # print(x)
-    # print("////////////////////////////////////")
     for y in range(0,n):
         try:
             reslog=math.log2((veventos[x][y]/feventos[x])*(1/newArray[y]))
@@ -267,9 +251,6 @@ for x in range(0,len(leventos)):
             reslog=0
         formula=(veventos[x][y]/feventos[x])*reslog
         resultado=resultado+formula
-        # print("///////////")
-        # print("Formula = "+str(formula))
-        # print("///////////")
         
     KLDnorml=resultado
     
@@ -304,19 +285,21 @@ for x in TrazasSinRepetir:
     i=i+1
 print("########################################################\n\n")
 
-# for x in TrazasSinRepetir:
-#     if x[1]>=1:
-#         print(x[0], ' : ', x[1], ' : ', x[2])
-
 
 # print("IVC= "+str(varianza))
+print("Datos DP")
+for x in range(0,len(resultadosdp)):
+    print(str(leventos[x])+" : "+str(resultadosdp[x]))
 print("DP promedio= "+str(DPpromedio))
+print("\n")
+
+print("Datos KL")
+for x in range(0,len(resultadosKLd)):
+    print(str(leventos[x])+" : "+str(resultadosKLd[x]))
 print("KLdivergente promedio= "+str(KLpromedio))
 print("\n")
 
 
-
-# print(TrazasSinRepetir)
 
 
 
@@ -327,11 +310,10 @@ Pusuario = .5
 umbral = .5
 TotalTrazasSelecc=len(listaTraza)*Pusuario
 
-# for x in listaTraza:
-#     print(x)
+
 
 ########## Seleccion de Instancias  ###################
-# Checking if the variable `varianzaumbral` is True.
+
 if DPpromedio<umbral:
     print("Seleccion de instancias por frecuencia")
     
