@@ -52,7 +52,7 @@ def prob(a,b,trazas):
     cont=0
     total=len(trazas)
     for x in trazas:
-        for y in range(1,len(x)):
+        for y in range(2,len(x)):
             if x[y-1]==a and x[y]==b:
                 cont=cont+1
                 break
@@ -78,9 +78,13 @@ contA=0
 ##Inicializar lista de trazas
 listaTraza=list()
 
-nombrearchivo="example.xes"
-# nombrearchivo="ArtificialPatientTreatment.csv"
-# nombrearchivo="CCC19LogCSV.csv"
+#nombrearchivo="Sepsis Cases - Event LogArtificial.xes"
+#nombrearchivo="CCC19LogCSV.csv"
+#nombrearchivo="ArtificialPatientTreatment.csv"
+#nombrearchivo="example.xes"
+nombrearchivo="Hospital Billing - Event Log.xes"
+# nombrearchivo="Sepsis Cases - Event Log.xes"
+
 
 if nombrearchivo[-3:]=="xes":
     log = xes_importer.apply(nombrearchivo)
@@ -88,7 +92,7 @@ if nombrearchivo[-3:]=="xes":
     dataframe = log_converter.apply(log, variant=log_converter.Variants.TO_DATA_FRAME)
 elif nombrearchivo[-3:]=="csv":
     dataframe = pd.read_csv(nombrearchivo, sep=',')
-    dataframe = pm4py.format_dataframe(dataframe, case_id='CASEID', activity_key='ACTIVITY', timestamp_key='START')
+    dataframe = pm4py.format_dataframe(dataframe, case_id='patient', activity_key='action', timestamp_key='DateTime')
     log = pm4py.convert_to_event_log(dataframe)
 
 
@@ -355,18 +359,22 @@ if DPpromedio<umbral:
     print(alignments)
     for x in aligned_traces:
         print(x)
+    from pm4py.algo.evaluation.replay_fitness import algorithm as replay_fitness
+    log_fitness = replay_fitness.evaluate(aligned_traces, variant=replay_fitness.Variants.ALIGNMENT_BASED)
+
+    print(log_fitness) 
 
         
 
 
-elif DPpromedio>umbral:
-    print("Selección de instancias por patrones de secuencia frecuentes")
+elif DPpromedio>=umbral:
+    print("Selección de instancias por similitud")
     print("Se seleccionaran "+str(TotalTrazasSelecc) + "Trazas")
     ########## Seleccion por patrones de secuencia frecuentes ###################
     for x in listaTraza:
         contval=0
-        for y in range(1,len(x)):
-            if prob(x[y-1],x[y],listaTraza) >= Pusuario:
+        for y in range(2,len(x)):
+            if prob(str(x[y-1]),str(x[y]),listaTraza) >= Pusuario:
                 contval=contval+1
             else:
                 contval=contval-1
@@ -395,3 +403,7 @@ elif DPpromedio>umbral:
     print(alignments)
     for x in aligned_traces:
         print(x)
+    from pm4py.algo.evaluation.replay_fitness import algorithm as replay_fitness
+    log_fitness = replay_fitness.evaluate(aligned_traces, variant=replay_fitness.Variants.ALIGNMENT_BASED)
+
+    print(log_fitness) 
