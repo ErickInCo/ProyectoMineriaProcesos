@@ -78,11 +78,11 @@ contA=0
 ##Inicializar lista de trazas
 listaTraza=list()
 
-#nombrearchivo="Sepsis Cases - Event LogArtificial.xes"
+# nombrearchivo="Sepsis Cases - Event LogArtificial.xes"
 #nombrearchivo="CCC19LogCSV.csv"
-#nombrearchivo="ArtificialPatientTreatment.csv"
-#nombrearchivo="example.xes"
-nombrearchivo="Hospital Billing - Event Log.xes"
+# nombrearchivo="ArtificialPatientTreatment.csv"
+nombrearchivo="example.xes"
+# nombrearchivo="Hospital Billing - Event Log.xes"
 # nombrearchivo="Sepsis Cases - Event Log.xes"
 
 
@@ -317,13 +317,13 @@ TotalTrazasSelecc=len(listaTraza)*Pusuario
 
 
 ########## Seleccion de Instancias  ###################
-
+SI=list()
 if DPpromedio<umbral:
     print("Seleccion de instancias por frecuencia")
     
-    print("Se seleccionaran "+str(TotalTrazasSelecc) + "Trazas")
+    print("Se seleccionaran "+str(TotalTrazasSelecc) + " Trazas")
     con=0
-    SI=list()
+    # SI=list()
     for x in TrazasSinRepetir:
         for y in range(0,x[1]):
             SI.append(x[0].copy())
@@ -373,6 +373,7 @@ elif DPpromedio>=umbral:
     ########## Seleccion por patrones de secuencia frecuentes ###################
     for x in listaTraza:
         contval=0
+        
         for y in range(2,len(x)):
             if prob(str(x[y-1]),str(x[y]),listaTraza) >= Pusuario:
                 contval=contval+1
@@ -384,6 +385,7 @@ elif DPpromedio>=umbral:
     for x in listaTraza:
         # print(x)
         print(x[1:])
+        SI.append(x.copy())
         log2.append(x[0])
         c=c+1
         if c==TotalTrazasSelecc:
@@ -407,3 +409,30 @@ elif DPpromedio>=umbral:
     log_fitness = replay_fitness.evaluate(aligned_traces, variant=replay_fitness.Variants.ALIGNMENT_BASED)
 
     print(log_fitness) 
+
+PB =list()
+N=2
+for x in SI:
+    buscar=x[2:N+1]
+    buscarC=x[2:N+2]
+    cBuscar=0
+    cBuscarC=0
+    for y in SI:
+        res = any(y[idx : idx + len(buscar)] == buscar
+                for idx in range(len(y) - len(buscar) + 1))
+        if res:
+            cBuscar+=1
+        res = any(y[idx : idx + len(buscarC)] == buscarC
+                for idx in range(len(y) - len(buscarC) + 1))
+        if res:
+            cBuscarC+=1
+            
+    x.append(cBuscar)
+    x.append(cBuscarC)
+    x.append(cBuscar/cBuscarC)
+
+print("\n\nPromedios\n\n")
+cc=1
+for x in SI:
+    print("Traza "+str(cc)+"  "+str(x[-1]))
+    cc+=1
