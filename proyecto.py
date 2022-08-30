@@ -353,9 +353,9 @@ if DPpromedio<umbral:
 
     ########## Fin de BPMN completo ###################
     # Alineamiento
-    net, initial_marking, final_marking = inductive_miner.apply(log)
+    net, initial_marking, final_marking = inductive_miner.apply(log2)
     from pm4py.algo.conformance.alignments.petri_net import algorithm as alignments
-    aligned_traces = alignments.apply_log(log, net, initial_marking, final_marking)
+    aligned_traces = alignments.apply_log(log2, net, initial_marking, final_marking)
     print(alignments)
     for x in aligned_traces:
         print(x)
@@ -401,7 +401,7 @@ elif DPpromedio>=umbral:
     # Alineamiento
     net, initial_marking, final_marking = inductive_miner.apply(log2)
     from pm4py.algo.conformance.alignments.petri_net import algorithm as alignments
-    aligned_traces = alignments.apply_log(log, net, initial_marking, final_marking)
+    aligned_traces = alignments.apply_log(log2, net, initial_marking, final_marking)
     print(alignments)
     for x in aligned_traces:
         print(x)
@@ -410,29 +410,73 @@ elif DPpromedio>=umbral:
 
     print(log_fitness) 
 
-PB =list()
+# Generacion pb
 N=2
 for x in SI:
-    buscar=x[2:N+1]
-    buscarC=x[2:N+2]
-    cBuscar=0
-    cBuscarC=0
-    for y in SI:
-        res = any(y[idx : idx + len(buscar)] == buscar
-                for idx in range(len(y) - len(buscar) + 1))
-        if res:
-            cBuscar+=1
-        res = any(y[idx : idx + len(buscarC)] == buscarC
-                for idx in range(len(y) - len(buscarC) + 1))
-        if res:
-            cBuscarC+=1
-            
-    x.append(cBuscar)
-    x.append(cBuscarC)
-    x.append(cBuscar/cBuscarC)
+    nGramSum=1
+    # print("\n")
+    # print(x[1:])
+    for i in range(N,len(x)):
+        buscar=x[i-1:i]
+        buscarC=x[i-1:i+1]
+        cBuscar=0
+        cBuscarC=0
+        for y in SI:
+            res = len([buscarC for idx in range(len(y)) if y[idx : idx + len(buscarC)] == buscarC])
+            cBuscarC+=res
+            res = len([buscar for idx in range(len(y)) if y[idx : idx + len(buscar)] == buscar])
+            cBuscar+=res
+            # res = any(y[idx : idx + len(buscar)] == buscar
+            #         for idx in range(len(y) - len(buscar) + 1))
+            # if res:
+            #     cBuscar+=1
+            # res = any(y[idx : idx + len(buscarC)] == buscarC
+            #         for idx in range(len(y) - len(buscarC) + 1))
+            # if res:
+            #     cBuscarC+=1
+        divi=(cBuscarC/cBuscar)
+        nGramSum=nGramSum*divi
+        # print(buscarC,end=" / ")
+        # print(buscar)
+        # print(str(cBuscarC)+" / "+str(cBuscar))
+        # print(divi)
+        # print("div = "+str(nGramSum)+"\n\n")
+    x.append(nGramSum)
 
 print("\n\nPromedios\n\n")
 cc=1
 for x in SI:
     print("Traza "+str(cc)+"  "+str(x[-1]))
     cc+=1
+
+# Margen de error
+margenErrorP=0
+margenErrorN=0
+meX=0
+for x in range(0,len(SI)):
+    res=((aligned_traces[x]["fitness"]-log_fitness["average_trace_fitness"])**2)/len(SI)
+    meX+=res
+margenErrorP=0.95* math.sqrt(meX/len(SI))
+margenErrorN=-1*margenErrorP
+
+print("Margen de Error = ±" + str(margenErrorP) )
+
+print()
+for x in range(0,len(SI)):
+    t=SI[x][1:-1]
+    f=aligned_traces[x]["fitness"]
+    b=SI[x][-1]
+    print(str(t)+"  "+str(f)+"   "+str(b))
+
+#Econf
+econf=0
+pacumulada=0
+uconf=len(SI)/len(listaTraza)
+for x in range(0,len(SI)):
+    t=SI[x][1:-1]
+    f=aligned_traces[x]["fitness"]
+    b=SI[x][-1]
+    econf+=(b*f)+((1-pacumulada)*uconf)
+    pacumulada+=b
+print("Econf")
+print(str(econf)+" ±"+str(margenErrorP))
